@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -51,6 +52,28 @@ namespace Exercises
                     } 
                 #endregion
             } 
+
+        public class CustomAppException : Exception
+        {
+            private eErrorType ErrorResponesEx { get; set; } = eErrorType.Ninguno;
+
+            public CustomAppException(): base(){}
+
+            public CustomAppException(string message, eErrorType type) : base(message)
+            {
+                ErrorResponesEx = type;
+            }
+        }
+
+        public enum eErrorType
+        {
+            Ninguno = 0,
+            Validacion,
+            Conexion,
+            InformacionDuplicada,
+            Autenticacion,
+            Desconocido = 99
+        }
         #endregion
 
         private static List<User> GetUsers()
@@ -68,6 +91,12 @@ namespace Exercises
 
             const string username = "VaqueraElPro";
             const string password = "EL+Pro";
+
+            //RegisterUSerWithoutValidations(username, password, "18");
+
+            RegisterUserWithValidations(username, password, "catorce");
+
+
             Console.ReadKey();
         }
 
@@ -87,9 +116,54 @@ namespace Exercises
                 InsertUser(new(username, password ));
             }
 
-            return userId;
+            Console.WriteLine("Confirmo los cambios");
+
+            return 0;
         }
 
+        public static void RegisterUserWithValidations(string username, string password, string ageInput)
+        {
+            Console.WriteLine("Iniciamos el proceso de registro de clientes");
+           
+            try
+            {
+                Console.WriteLine("Abrimos la tansaccion");
+
+                int age = Convert.ToInt32(ageInput);
+
+                Console.WriteLine("Ejecutamos acciones en la base de datos");
+
+                if (!IsExistingUser(username))
+                {
+                    InsertUser(new(username, password));
+                }
+
+                Console.WriteLine("Confirmo los cambios");
+
+
+            }
+            catch (CustomAppException ex)
+            {
+                Console.Write(ex.Message);
+                Console.WriteLine("Roll Back");
+                
+            }
+            
+        }
+
+        private static int ValidateAge(string ageInput)
+        {
+            if(!int.TryParse(ageInput, out int age))
+            {
+                throw new CustomAppException("La Edad Viene en un Formato incorrecto.", eErrorType.Validacion);
+      
+            }
+
+            if( age < MIN_AGE || age > MAX_AGE){
+                throw new CustomAppException($"La edad debe estar entre los {MIN_AGE} y los {MAX_AGE} años", eErrorType.Validacion);
+            }
+            return age;
+        }
         public static bool IsExistingUser(string username)
         {
             return (UserList?.Any(user => user.Username == username)).GetValueOrDefault();
