@@ -22,7 +22,7 @@ export class AppComponent {
         switch (namespace) {
           case 'mat':
             return this.domSanitizer.bypassSecurityTrustResourceUrl(
-              assets / img / icons / material - design - icons / two - tone / ${ name }.svg
+              `assets / img / icons / material - design - icons / two - tone / ${ name }.svg`
             );
         }
       }
