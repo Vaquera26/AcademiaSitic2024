@@ -1,0 +1,29 @@
+<h1>{{title}}</h1>
+
+<!--<app-counter></app-counter>-->
+
+<h1>{{nombre | uppercase}}</h1>
+
+<dl>
+    <td>Nombre</td>
+    <dd>{{nombre}}</dd>
+
+    <td>Precio</td>
+    <dd>{{precio | number: '.2'}}</dd>
+
+    <td>Metodo</td>
+    <dd>{{getArticuloInfo()}}</dd>
+
+    <button *ngIf="!precioChanged" (click)="cambiarPrecio()">
+        Cambiar Precio
+    </button>
+
+    <button *ngIf="!nombreChanged"
+     (click)="cambiarNombre()">
+        Cambiar Nombre
+    </button>
+    <button *ngIf="nombreChanged || precioChanged"
+     (click)="resetForm()">
+        Reset
+    </button>
+</dl>
